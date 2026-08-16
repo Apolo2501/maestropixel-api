@@ -27,6 +27,6 @@ def predict_now(data: dict):
 
 @app.post("/predict_future")
 def predict_future(features: dict):
-    df = pd.DataFrame([data])
+    df = pd.DataFrame([features])
     pred = model_future.predict(df)[0]
     return {"prediction": float(pred)}
