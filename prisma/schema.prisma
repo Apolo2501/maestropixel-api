@@ -1,0 +1,101 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  name           String?
+  email          String   @unique
+  hashedPassword String
+  lastLogin      DateTime @default(now())
+  posts          Post[]
+}
+
+model PostTag {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  post   Post   @relation(fields: [postId], references: [id])
+  postId String @db.ObjectId
+  tag    Tag    @relation(fields: [tagId], references: [id])
+  tagId  String @db.ObjectId
+}
+
+model Tag {
+  id       String    @id @default(auto()) @map("_id") @db.ObjectId
+  name     String    @unique
+  postTags PostTag[] // ✅ relación explícita
+}
+
+model Post {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  slug        String    @unique
+  excerpt     String?
+  authorId    String    @db.ObjectId
+  author      User      @relation(fields: [authorId], references: [id])
+  publishedAt DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  category    String?
+  isFeatured  Boolean   @default(false)
+  views       Int       @default(0)
+  isPublished Boolean   @default(true)
+  tags        PostTag[]
+  blocks      Block[] // Relación con bloques de contenido
+}
+
+model Block {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  type      BlockType
+  content   String // texto, URL, etc.
+  publicId  String? // solo se usa si type = IMAGE
+  position  Int
+  isVisible Boolean   @default(true)
+  postId    String?    @db.ObjectId
+  post      Post?      @relation(fields: [postId], references: [id])
+}
+
+enum BlockType {
+  PARAGRAPH
+  IMAGE
+  VIDEO
+  QUOTE
+  HEADING
+  LINK
+}
+
+model Parking {
+  id          Int      @id @map("_id")
+  name        String
+  nickName    String?
+  address     String?
+  town        String?
+  state       String?
+  areaCode    String?
+  latitude    Float
+  longitude   Float
+  category    String?
+  familyCode  String?
+  type        String?
+
+  occupancy   ParkingOccupancy[]
+}
+
+
+model ParkingOccupancy {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  parkingId    Int
+  moment       DateTime
+  free         Int
+
+  parking      Parking @relation(fields: [parkingId], references: [id])
+}
