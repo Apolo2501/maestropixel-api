@@ -30,3 +30,11 @@ jobs:
 
       - name: Run training script
         run: python scripts/train.py
+
+      - name: Push model to API repo
+        continue-on-error: true
+        run: |
+          git add models/parking_rf_model.pkl
+          git add models/parking_rf_model_predictor.pkl
+          git commit -m "Update models"
+          git push https://$TOKEN@github.com/Apolo2501/maestropixel-api.git
