@@ -1,0 +1,46 @@
+name: Train Parking Model
+
+permissions:
+  contents: write
+  
+on:
+  schedule:
+    - cron: "0 * * * *"   # cada hora
+  workflow_dispatch:
+
+jobs:
+  train:
+    runs-on: ubuntu-latest
+
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      TOKEN: ${{ secrets.API_REPO_TOKEN }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt
+
+      - name: Run training script
+        run: python scripts/train.py
+
+      - name: Push model to API repo
+        continue-on-error: true
+        run: |
+          git clone https://$TOKEN@github.com/Apolo2501/maestropixel-api.git
+          cp models/parking_rf_model.pkl maestropixel-api/models/parking_rf_model.pkl
+          cp models/parking_rf_model_predictor.pkl maestropixel-api/models/parking_rf_model_predictor.pkl
+          cd maestropixel-api
+          git config user.name "Apolo2501"
+          git config user.email "anpol92@hotmail.com"
+          git add models/parking_rf_model.pkl
+          git add models/parking_rf_model_predictor.pkl
+          git commit -m "Update models"
+          git push https://$TOKEN@github.com/Apolo2501/maestropixel-api.git
