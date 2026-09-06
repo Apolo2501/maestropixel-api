@@ -34,6 +34,8 @@ jobs:
       - name: Push model to API repo
         continue-on-error: true
         run: |
+          git config user.name "Apolo2501"
+          git config user.email "anpol92@hotmail.com"
           git add models/parking_rf_model.pkl
           git add models/parking_rf_model_predictor.pkl
           git commit -m "Update models"
