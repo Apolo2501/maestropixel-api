@@ -58,14 +58,14 @@ def compute_lags_for_group(group):
             return None
         return prev.iloc[-1]["free"]
 
-    group["lag_1h"] = round(float(group.index.map(lambda t: get_prev_value(t, 1))), 2)
-    group["lag_2h"] = round(float(group.index.map(lambda t: get_prev_value(t, 2))), 2)
-    group["lag_3h"] = round(float(group.index.map(lambda t: get_prev_value(t, 3))), 2)
-    group["lag_24h"] = round(float(group.index.map(lambda t: get_prev_value(t, 24))), 2)
+    group["lag_1h"] = group.index.map(lambda t: get_prev_value(t, 1))
+    group["lag_2h"] = group.index.map(lambda t: get_prev_value(t, 2))
+    group["lag_3h"] = group.index.map(lambda t: get_prev_value(t, 3))
+    group["lag_24h"] = group.index.map(lambda t: get_prev_value(t, 24))
 
-    group["trend_1h"] = round(float(group["free"] - group["lag_1h"]), 2)
-    group["trend_3h"] = round(float(group["free"] - group["lag_3h"]), 2)
-    group["trend_6h"] = round(float(group["free"] - group.index.map(lambda t: get_prev_value(t, 6))), 2)
+    group["trend_1h"] = group["free"] - group["lag_1h"]
+    group["trend_3h"] = group["free"] - group["lag_3h"]
+    group["trend_6h"] = group["free"] - group.index.map(lambda t: get_prev_value(t, 6))
 
     return group.reset_index()
 
@@ -152,22 +152,22 @@ print("Predicción:", response.json())
 # parkingId, moment, free, day_week, hour
 
 # 1) Media por parking y hora
-mean_hour = round(float(
+mean_hour = (
     df_po.groupby(["parkingId", "hour"])["free"]
       .agg(["mean", "std"])
       .reset_index()
       .rename(columns={"mean": "mean_free_hour_parking",
                        "std": "std_free_hour_parking"})
-), 2)
+)
 
 # 2) Media por parking, día de semana y hora
-mean_dow_hour = round(float(
+mean_dow_hour = (
     df_po.groupby(["parkingId", "day_week", "hour"])["free"]
       .agg(["mean", "std"])
       .reset_index()
       .rename(columns={"mean": "mean_free_hour_dow_parking",
                        "std": "std_free_hour_dow_parking"})
-), 2)
+)
 
 # 3) Unimos estas medias al dataset original
 df_po_final_predictor = df_po.merge(mean_hour, on=["parkingId", "hour"], how="left")
