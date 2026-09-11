@@ -14,7 +14,6 @@ jobs:
 
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      TOKEN: ${{ secrets.API_REPO_TOKEN }}
 
     steps:
       - name: Checkout repo
