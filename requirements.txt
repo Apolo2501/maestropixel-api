@@ -3,3 +3,8 @@ uvicorn
 pandas
 joblib
 scikit-learn
+pymongo
+numpy
+python-dotenv
+requests
+lightgbm
