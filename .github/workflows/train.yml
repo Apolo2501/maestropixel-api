@@ -30,6 +30,14 @@ jobs:
       - name: Run training script
         run: python scripts/train.py
 
+      - name: Install Git LFS
+        run: git lfs install
+
+      - name: Track model files
+        run: |
+         git lfs track "*.pkl"
+         git add .gitattributes
+
       - name: Push model to API repo
         continue-on-error: true
         run: |
@@ -37,5 +45,5 @@ jobs:
           git config user.email "anpol92@hotmail.com"
           git add models/parking_rf_model.pkl
           git add models/parking_rf_model_predictor.pkl
-          git commit -m "Update models"
-          git push
+          git commit -m "Update models via LFS"
+          git push origin main
