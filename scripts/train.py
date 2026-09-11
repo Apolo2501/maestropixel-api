@@ -92,20 +92,20 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
 )
 
-# model = RandomForestRegressor(
-#     n_estimators=300,
-#     max_depth=20,
-#     min_samples_split=4,
-#     min_samples_leaf=2,
-#     random_state=42,
-#     n_jobs=-1
-# )
-
 model = lgb.LGBMRegressor(
-    n_estimators=300,
-    max_depth=10,
-    learning_rate=0.05
+    n_estimators=600,          # más árboles pero más pequeños
+    learning_rate=0.03,        # más suave, mejor generalización
+    max_depth=-1,              # deja que LightGBM decida
+    num_leaves=64,             # equilibrio entre precisión y tamaño
+    min_child_samples=20,      # evita overfitting
+    subsample=0.8,             # bagging
+    subsample_freq=1,          # activa bagging
+    colsample_bytree=0.8,      # reduce correlación entre árboles
+    reg_alpha=0.1,             # L1 regularization
+    reg_lambda=0.2,            # L2 regularization
+    random_state=42
 )
+
 
 model.fit(X_train, y_train)
 
@@ -188,20 +188,20 @@ X2_train, X2_test, y2_train, y2_test = train_test_split(
     X_2, y_2, test_size=0.2, random_state=42
 )
 
-# model2 = RandomForestRegressor(
-#     n_estimators=200,
-#     max_depth=12,
-#     min_samples_split=4,
-#     min_samples_leaf=2,
-#     random_state=42,
-#     n_jobs=-1
-# )
-
 model2 = lgb.LGBMRegressor(
-    n_estimators=300,
-    max_depth=10,
-    learning_rate=0.05
+    n_estimators=600,          # más árboles pero más pequeños
+    learning_rate=0.03,        # más suave, mejor generalización
+    max_depth=-1,              # deja que LightGBM decida
+    num_leaves=64,             # equilibrio entre precisión y tamaño
+    min_child_samples=20,      # evita overfitting
+    subsample=0.8,             # bagging
+    subsample_freq=1,          # activa bagging
+    colsample_bytree=0.8,      # reduce correlación entre árboles
+    reg_alpha=0.1,             # L1 regularization
+    reg_lambda=0.2,            # L2 regularization
+    random_state=42
 )
+
 
 print(f"Entrenando modelo predictor con {X2_train.iloc[0].to_dict()}")
 
